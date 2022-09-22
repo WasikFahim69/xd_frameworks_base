@@ -20,6 +20,7 @@ import android.annotation.NonNull;
 import android.annotation.Nullable;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.RectF;
@@ -28,7 +29,7 @@ import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-
+import com.android.systemui.R;
 /**
  * Surface View for providing the Global High-Brightness Mode (GHBM) illumination for UDFPS.
  */
@@ -53,7 +54,7 @@ public class UdfpsSurfaceView extends SurfaceView implements SurfaceHolder.Callb
     @Nullable private Runnable mOnIlluminatedRunnable;
     boolean mAwaitingSurfaceToStartIllumination;
     boolean mHasValidSurface;
-
+    private Drawable mUdfpsIconPressed;
     public UdfpsSurfaceView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -69,8 +70,9 @@ public class UdfpsSurfaceView extends SurfaceView implements SurfaceHolder.Callb
 
         mSensorPaint = new Paint(0 /* flags */);
         mSensorPaint.setAntiAlias(true);
-        mSensorPaint.setARGB(255, 255, 255, 255);
+        mSensorPaint.setColor(context.getColor(R.color.config_udfpsColor));
         mSensorPaint.setStyle(Paint.Style.FILL);
+        mUdfpsIconPressed = context.getDrawable(R.drawable.udfps_icon_pressed);
     }
 
     @Override public void surfaceCreated(SurfaceHolder holder) {
@@ -134,6 +136,19 @@ public class UdfpsSurfaceView extends SurfaceView implements SurfaceHolder.Callb
         Canvas canvas = null;
         try {
             canvas = mHolder.lockCanvas();
+            mUdfpsIconPressed.setBounds(
+
+                    Math.round(sensorRect.left),
+
+                    Math.round(sensorRect.top),
+
+                    Math.round(sensorRect.right),
+
+                    Math.round(sensorRect.bottom)
+
+            );
+
+            mUdfpsIconPressed.draw(canvas);
             canvas.drawOval(sensorRect, mSensorPaint);
         } finally {
             // Make sure the surface is never left in a bad state.
